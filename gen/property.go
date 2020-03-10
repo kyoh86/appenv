@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/kyoh86/gogh/appenv/types"
+	"github.com/kyoh86/appenv/types"
 	"github.com/stoewer/go-strcase"
 )
 

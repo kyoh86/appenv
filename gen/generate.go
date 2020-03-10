@@ -22,7 +22,7 @@ type Generator struct {
 const (
 	pkgYAML    = "gopkg.in/yaml.v3"
 	pkgKeyring = "github.com/zalando/go-keyring"
-	pkgTypes   = "github.com/kyoh86/gogh/appenv/types"
+	pkgTypes   = "github.com/kyoh86/appenv/types"
 	pkgStrcase = "github.com/stoewer/go-strcase"
 )
 
