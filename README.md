@@ -10,10 +10,10 @@ Application options manager for golang
 In developing applications in golang, we want to manage many options for it.
 And they often are in a file, envars or the keyring.
 
-It is too heavy to manage them and bores developers.
+It is too heavy and bores developers to manage them.
 So appenv generates codes to do it.
 
-- Decoding/encoding function
+- Load/save function
 - Configuration accessor (get, set or unset them with application)
 
 ## How to use it?
@@ -58,12 +58,12 @@ where the option will be stored to or loaded from.
 
 Now `appenv` supports some Stores like below.
 
-- Envar (environment variable)
 - YAML
 - Keyring
+- Envar (environment variable)
 
 Each options can store to / be loaded from multiple `Store`
-like `Keyring` and `Envar`.
+like `YAML`, `Keyring` and `Envar`.
 
 ```go
 // +build generate
@@ -85,7 +85,7 @@ func main() {
 	if err := g.Do(
 		"github.com/kyoh86/gogh/env",
 		"../",
-		gen.Prop(new(env.GithubToken), gen.Keyring(), gen.Envar()),
+		gen.Prop(new(env.GithubToken), gen.YAML(), gen.Keyring(), gen.Envar()),
 	); err != nil {
 		log.Fatal(err)
 	}
@@ -119,7 +119,45 @@ The tag may prevent the generator from being unintendedly built in your `$GOBIN`
 
 Generated codes can be used like below.
 
-(writing...)
+#### To get value
+
+```go
+import (
+	// Import generated package
+	"github.com/kyoh86/gogh/env"
+)
+
+const (
+  configFile     = "~/.config/gogh/config.yaml"
+  keyringService = "gogh.kyoh86.dev" // any unique service name
+  envarPrefix    = "GOGH_" 
+)
+
+file, _ := os.Open(configFile)
+access, _ := env.GetAccess(file, keyringService, envarPrefix)
+println(access.GithubToken())
+```
+
+#### To change configure
+
+```go
+import (
+	// Import generated package
+	"github.com/kyoh86/gogh/env"
+)
+
+const (
+  configFile     = "~/.config/gogh/config.yaml"
+  keyringService = "gogh.kyoh86.dev" // any unique service name
+  envarPrefix    = "GOGH_" 
+)
+
+file, _ := os.Open(configFile)
+config, _ := env.GetConfig(file, keyringService, envarPrefix)
+githubToken, _ := config.Property("github.token")
+githubToken.Set("foobar")
+config.SaveFile(file, keyringService) // NOTE: Envar will not exported.
+```
 
 ## Install
 
