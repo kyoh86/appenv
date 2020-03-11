@@ -198,7 +198,7 @@ func (g *Generator) genConfig(file *jen.File, properties []*Property) {
 		saveConfigCodes.Return(jen.Nil())
 	}).Line()
 
-	file.Func().Id("ConfigNames").Call().Params(jen.Index().String()).Block(
+	file.Func().Id("PropertyNames").Call().Params(jen.Index().String()).Block(
 		jen.Return().Index().String().ValuesFunc(func(namesList *jen.Group) {
 			file.Func().Params(jen.Id("a").Id("*Config")).Id("Property").Params(jen.Id("name").String()).Params(jen.Qual(pkgTypes, "Config"), jen.Id("error")).Block(
 				jen.Switch(jen.Id("name")).BlockFunc(func(propSwitch *jen.Group) {
@@ -250,7 +250,7 @@ func (g *Generator) genConfig(file *jen.File, properties []*Property) {
 						}).Line()
 					}
 				}),
-				jen.Return(jen.Nil(), jen.Qual("fmt", "Errorf").Call(jen.Lit("invalid propertye name %q"), jen.Id("name"))),
+				jen.Return(jen.Nil(), jen.Qual("fmt", "Errorf").Call(jen.Lit("invalid property name %q"), jen.Id("name"))),
 			)
 		}),
 	).Line()
