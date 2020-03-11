@@ -340,9 +340,13 @@ func (g *Generator) genYAML(file *jen.File, properties []*Property) {
 }
 
 func (g *Generator) genKeyring(file *jen.File, properties []*Property) {
+	file.Const().Id("DiscardKeyringService").String().Op("=").Lit("")
+
 	file.Type().Id("Keyring").StructFunc(func(keyringFields *jen.Group) {
 		file.Func().Id("loadKeyring").Params(jen.Id("keyringService").String()).Params(jen.Id("key").Id("Keyring"), jen.Err().Id("error")).BlockFunc(func(loadKeyringCodes *jen.Group) {
 			file.Func().Id("saveKeyring").Params(jen.Id("keyringService").String(), jen.Id("key").Id("*Keyring")).Params(jen.Err().Id("error")).BlockFunc(func(saveKeyringCodes *jen.Group) {
+				loadKeyringCodes.If(jen.Id("keyringService").Op("==").Id("DiscardKeyringService")).Block(jen.Return())
+				saveKeyringCodes.If(jen.Id("keyringService").Op("==").Id("DiscardKeyringService")).Block(jen.Return())
 				for _, p := range properties {
 					if !p.storeKeyring {
 						continue
