@@ -318,6 +318,7 @@ func (g *Generator) genYAML(file *jen.File, properties []*Property) {
 			),
 		)
 	file.Line()
+	file.Var().Id("EmptyYAMLReader").Qual("io", "Reader").Op("=").Nil()
 	file.Func().Id("loadYAML").
 		Params(
 			jen.Id("r").Qual("io", "Reader"),
@@ -327,6 +328,9 @@ func (g *Generator) genYAML(file *jen.File, properties []*Property) {
 			jen.Err().Id("error"),
 		).
 		Block(
+			jen.If(jen.Id("r").Op("==").Id("EmptyYAMLReader")).Block(
+				jen.Return(),
+			),
 			jen.Err().Op("=").Qual("gopkg.in/yaml.v3", "NewDecoder").Call(jen.Id("r")).
 				Op(".").
 				Id("Decode").Call(jen.Op("&").Id("yml")),
