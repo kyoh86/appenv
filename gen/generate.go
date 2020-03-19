@@ -364,8 +364,6 @@ func (g *Generator) genKeyring(file *jen.File, properties []*Property) {
 								jen.Return(jen.Id("key"), jen.Err()),
 							),
 							jen.Id("key").Dot(p.name).Op("=").Id("&value"),
-						).Else().Block(
-							jen.Qual("log", "Printf").Call(jen.Lit("info: there's no secret in "+p.kebabName+"@%s (%v)"), jen.Id("keyringService"), jen.Err()),
 						),
 					)
 					saveKeyringCodes.Block(
@@ -401,9 +399,7 @@ func (g *Generator) genEnvar(file *jen.File, properties []*Property) {
 
 				loadEnvarCodes.Block(jen.List(jen.Id("v")).Op(":=").Qual("os", "Getenv").
 					Call(jen.Id("prefix").Op("+").Lit(p.snakeName)),
-					jen.If(jen.Id("v").Op("==").Lit("")).Block(
-						jen.Qual("log", "Printf").Call(jen.Lit("info: there's no envar %s"+p.snakeName+" (%v)"), jen.Id("prefix"), jen.Err()),
-					).Else().Block(
+					jen.If(jen.Id("v").Op("!=").Lit("")).Block(
 						jen.Var().Id("value").Qual(p.pkgPath, p.name),
 						jen.If(
 							jen.Err().Op("=").Id("value").Dot("UnmarshalText").Call(jen.Index().Byte().Parens(jen.Id("v"))),
