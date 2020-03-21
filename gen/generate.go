@@ -203,6 +203,7 @@ func (g *Generator) genConfig(file *jen.File, properties []*Property) {
 			file.Func().Params(jen.Id("a").Id("*Config")).Id("Property").Params(jen.Id("name").String()).Params(jen.Qual(pkgTypes, "Config"), jen.Id("error")).Block(
 				jen.Switch(jen.Id("name")).BlockFunc(func(propSwitch *jen.Group) {
 					for _, p := range properties {
+						p := p
 						// Add property name
 						namesList.Lit(p.dottedName)
 
