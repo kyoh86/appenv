@@ -183,6 +183,9 @@ func (g *Generator) genAppenv(file *jen.File) {
 				paramCodes.Add(jen.Id("keyringService"))
 			}
 		})
+		getAppenvCodes.If(jen.Err().Op("!=").Nil()).Block(
+			jen.Return(jen.Id("config"), jen.Id("access"), jen.Err()),
+		)
 		getAppenvCodes.List(jen.Id("access"), jen.Err()).
 			Op("=").Id("buildAccess").CallFunc(func(paramCodes *jen.Group) {
 			if g.storeYAML {
@@ -192,6 +195,9 @@ func (g *Generator) genAppenv(file *jen.File) {
 				paramCodes.Add(jen.Id("envarPrefix"))
 			}
 		})
+		getAppenvCodes.If(jen.Err().Op("!=").Nil()).Block(
+			jen.Return(jen.Id("config"), jen.Id("access"), jen.Err()),
+		)
 		getAppenvCodes.Return(jen.Id("config"), jen.Id("access"), jen.Nil())
 	}).Line()
 }
