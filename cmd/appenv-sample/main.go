@@ -1,13 +1,29 @@
-// +build sample
+// +build generate
 
 package main
 
 import (
-	"fmt"
+	"log"
 
-	"github.com/kyoh86/appenv"
+	"github.com/kyoh86/appenv/env"
+	"github.com/kyoh86/appenv/gen"
 )
 
+//go:generate go run -tags generate ./main.go
+
 func main() {
-	fmt.Printf("A version of the Package %s is %s\n", "appenv", appenv.Version())
+	g := &gen.Generator{
+		BuildTag: "sample",
+	}
+
+	if err := g.Do(
+		"github.com/kyoh86/appenv/env",
+		"../../env",
+		gen.Prop(new(env.GithubHost), gen.YAML(), gen.Envar()),
+		gen.Prop(new(env.GithubUser), gen.YAML(), gen.Envar()),
+		gen.Prop(new(env.Roots), gen.YAML(), gen.Envar()),
+		gen.Prop(new(env.Hooks), gen.YAML(), gen.Envar()),
+	); err != nil {
+		log.Fatalln(err)
+	}
 }
