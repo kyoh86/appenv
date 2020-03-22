@@ -155,7 +155,7 @@ func (g *Generator) tryAccess(accessCodes *jen.Group, srcName string, p *Propert
 	)
 }
 
-func (g *Generator) genAppenv(file *jen.File, properties []*Property) {
+func (g *Generator) genAppenv(file *jen.File) {
 	file.Func().Id("GetAppenv").ParamsFunc(func(getAppenvParams *jen.Group) {
 		if g.storeYAML {
 			getAppenvParams.Id("yamlReader").Qual("io", "Reader")
@@ -526,7 +526,7 @@ func (g *Generator) Do(packagePath, outDir string, properties ...*Property) erro
 	}
 
 	appenvFile := g.createFile(packagePath)
-	g.genAppenv(appenvFile, properties)
+	g.genAppenv(appenvFile)
 	if err := appenvFile.Save(filepath.Join(full, "appenv_gen.go")); err != nil {
 		return err
 	}
