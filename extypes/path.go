@@ -8,6 +8,42 @@ import (
 	"strings"
 )
 
+type Path struct {
+	value string
+}
+
+func (p *Path) Value() interface{} {
+	return expandPath(p.value)
+}
+
+// MarshalYAML implements the interface `yaml.Marshaler`
+func (p *Path) MarshalYAML() (interface{}, error) {
+	return p.value, nil
+}
+
+// UnmarshalYAML implements the interface `yaml.Unmarshaler`
+func (p *Path) UnmarshalYAML(unmarshal func(interface{}) error) error {
+	var parsed string
+	if err := unmarshal(&parsed); err != nil {
+		return err
+	}
+	p.value = parsed
+	return nil
+}
+
+func (p *Path) MarshalText() (text []byte, err error) {
+	return []byte(p.value), nil
+}
+
+func (p *Path) UnmarshalText(text []byte) error {
+	str, err := validatePath(string(text))
+	if err != nil {
+		return err
+	}
+	p.value = str
+	return nil
+}
+
 type Paths struct {
 	value []string
 }
