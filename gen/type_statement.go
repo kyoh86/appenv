@@ -8,40 +8,17 @@ import (
 
 func typeStatement(t reflect.Type) *jen.Statement {
 	switch t.Kind() {
-	case reflect.Bool:
-		return jen.Bool()
-	case reflect.Int:
-		return jen.Int()
-	case reflect.Int8:
-		return jen.Int8()
-	case reflect.Int16:
-		return jen.Int16()
-	case reflect.Int32:
-		return jen.Int32()
-	case reflect.Int64:
-		return jen.Int64()
-	case reflect.Uint:
-		return jen.Uint()
-	case reflect.Uint8:
-		return jen.Uint8()
-	case reflect.Uint16:
-		return jen.Uint16()
-	case reflect.Uint32:
-		return jen.Uint32()
-	case reflect.Uint64:
-		return jen.Uint64()
-	case reflect.Uintptr:
-		return jen.Uintptr()
-	case reflect.Float32:
-		return jen.Float32()
-	case reflect.Float64:
-		return jen.Float64()
-	case reflect.Complex64:
-		return jen.Complex64()
-	case reflect.Complex128:
-		return jen.Complex128()
-	case reflect.String:
-		return jen.String()
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
+		reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64,
+		reflect.Float32, reflect.Float64, reflect.Complex64, reflect.Complex128,
+		reflect.Bool, reflect.String, reflect.Uintptr:
+		// typed in the package
+		if path := t.PkgPath(); path != "" {
+			return jen.Qual(path, t.Name())
+		}
+		// primitive value (or named)
+		return jen.Id(t.Name())
+
 	case reflect.Struct:
 		// anonymous struct
 		if name := t.Name(); name == "" {

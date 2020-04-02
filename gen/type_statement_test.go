@@ -11,6 +11,8 @@ import (
 type testStruct struct {
 }
 
+type typedInt int
+
 func TestTypeStatement(t *testing.T) {
 	for _, testcase := range []struct {
 		value    interface{}
@@ -66,6 +68,9 @@ func TestTypeStatement(t *testing.T) {
 	}, {
 		value:    string(0),
 		notation: "string",
+	}, {
+		value:    typedInt(0),
+		notation: "gen.typedInt",
 	}, {
 		value:    testStruct{},
 		notation: "gen.testStruct",
