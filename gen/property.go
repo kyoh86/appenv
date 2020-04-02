@@ -37,12 +37,7 @@ func Prop(value types.Value, s Store, stores ...Store) (d *Property) {
 	d.pkgPath = typ.PkgPath()
 	d.name = typ.Name()
 
-	valueType := reflect.ValueOf(value.Value()).Type()
-	if path := valueType.PkgPath(); path != "" {
-		d.valueType = jen.Qual(path, valueType.Name())
-	} else {
-		d.valueType = jen.Id(valueType.Name())
-	}
+	d.valueType = typeStatement(reflect.ValueOf(value.Value()).Type())
 
 	s.mark(d)
 	for _, s := range stores {
