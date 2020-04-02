@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"strings"
 
+	"github.com/dave/jennifer/jen"
 	"github.com/kyoh86/appenv/types"
 	"github.com/stoewer/go-strcase"
 )
@@ -38,8 +39,11 @@ func Prop(value types.Value, s Store, stores ...Store) (d *Property) {
 	d.name = typ.Name()
 
 	valueType := reflect.ValueOf(value.Value()).Type()
-	d.valueEmpty = reflect.Zero(valueType).Interface()
-	d.valueType = fmt.Sprintf("%T", d.valueEmpty)
+	if path := valueType.PkgPath(); path != "" {
+		d.valueType = jen.Qual(path, valueType.Name())
+	} else {
+		d.valueType = jen.Id(valueType.Name())
+	}
 
 	s.mark(d)
 	for _, s := range stores {
@@ -71,6 +75,5 @@ type Property struct {
 
 	mask bool
 
-	valueEmpty interface{}
-	valueType  string
+	valueType *jen.Statement
 }

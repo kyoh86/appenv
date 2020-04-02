@@ -126,13 +126,13 @@ func (g *Generator) genAccess(file *jen.File, properties []*Property) {
 		}
 		file.Type().Id("Access").StructFunc(func(accessFields *jen.Group) {
 			for _, p := range properties {
-				accessFields.Id(p.camelName).Id(p.valueType)
+				accessFields.Id(p.camelName).Add(p.valueType)
 
-				file.Func().Params(jen.Id("a").Id("*Access")).Id(p.name).Params().Id(p.valueType).Block(
+				file.Func().Params(jen.Id("a").Id("*Access")).Id(p.name).Params().Add(p.valueType).Block(
 					jen.Return(jen.Id("a").Dot(p.camelName)),
 				).Line()
 
-				accessCodes.Id("access").Dot(p.camelName).Op("=").New(jen.Qual(p.pkgPath, p.name)).Dot("Default").Call().Assert(jen.Id(p.valueType))
+				accessCodes.Id("access").Dot(p.camelName).Op("=").New(jen.Qual(p.pkgPath, p.name)).Dot("Default").Call().Assert(p.valueType)
 				if p.storeYAML {
 					g.tryAccess(accessCodes, "yml", p)
 				}
@@ -151,7 +151,7 @@ func (g *Generator) genAccess(file *jen.File, properties []*Property) {
 
 func (g *Generator) tryAccess(accessCodes *jen.Group, srcName string, p *Property) {
 	accessCodes.If(jen.Id(srcName).Dot(p.name).Op("!=").Nil()).Block(
-		jen.Id("access").Dot(p.camelName).Op("=").Id(srcName).Dot(p.name).Dot("Value").Call().Assert(jen.Id(p.valueType)),
+		jen.Id("access").Dot(p.camelName).Op("=").Id(srcName).Dot(p.name).Dot("Value").Call().Assert(p.valueType),
 	)
 }
 
