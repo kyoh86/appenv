@@ -8,10 +8,12 @@ import (
 	"github.com/dave/jennifer/jen"
 )
 
-type testStruct struct {
-}
+type testStruct struct{}
 
 type typedInt int
+type typedArray [2]struct{}
+type typedSlice []struct{}
+type typedChan chan struct{}
 
 func TestTypeStatement(t *testing.T) {
 	for _, testcase := range []struct {
@@ -70,6 +72,15 @@ func TestTypeStatement(t *testing.T) {
 		notation: "string",
 	}, {
 		value:    typedInt(0),
+		notation: "gen.typedInt",
+	}, {
+		value:    typedArray{},
+		notation: "gen.typedInt",
+	}, {
+		value:    typedSlice{},
+		notation: "gen.typedInt",
+	}, {
+		value:    make(typedChan, 0),
 		notation: "gen.typedInt",
 	}, {
 		value:    testStruct{},
