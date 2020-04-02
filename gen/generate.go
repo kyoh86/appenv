@@ -127,6 +127,7 @@ func (g *Generator) genAccess(file *jen.File, properties []*Property) {
 		file.Type().Id("Access").StructFunc(func(accessFields *jen.Group) {
 			for _, p := range properties {
 				if p.valuePkgPath != "" {
+					println(p.valuePkgPath)
 					accessFields.Id(p.camelName).Qual(p.valuePkgPath, p.valueTypeName)
 				} else {
 					accessFields.Id(p.camelName).Id(p.valueTypeName)
