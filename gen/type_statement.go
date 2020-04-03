@@ -7,36 +7,25 @@ import (
 )
 
 func typeStatement(t reflect.Type) *jen.Statement {
-	switch t.Kind() {
-	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
-		reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64,
-		reflect.Float32, reflect.Float64, reflect.Complex64, reflect.Complex128,
-		reflect.Bool, reflect.String, reflect.Uintptr:
-		// typed in the package
+	// named or primitive types
+	if t.Name() != "" {
 		if path := t.PkgPath(); path != "" {
 			return jen.Qual(path, t.Name())
 		}
-		// primitive value (or named)
 		return jen.Id(t.Name())
+	}
 
+	// anonymous complex types
+	switch t.Kind() {
 	case reflect.Struct:
-		// anonymous struct
-		if name := t.Name(); name == "" {
-			if t.NumField() == 0 {
-				return jen.Struct()
+		if t.NumField() == 0 {
+			return jen.Struct()
+		}
+		return jen.StructFunc(func(s *jen.Group) {
+			for i := 0; i < t.NumField(); i++ {
+				s.Id(t.Field(i).Name).Add(typeStatement(t.Field(i).Type))
 			}
-			return jen.StructFunc(func(s *jen.Group) {
-				for i := 0; i < t.NumField(); i++ {
-					s.Id(t.Field(i).Name).Add(typeStatement(t.Field(i).Type))
-				}
-			})
-		}
-		// struct in the package
-		if path := t.PkgPath(); path != "" {
-			return jen.Qual(path, t.Name())
-		}
-		// primitive struct (this is a dead statement)
-		return jen.Id(t.Name())
+		})
 	case reflect.Map:
 		return jen.Map(typeStatement(t.Key())).Add(typeStatement(t.Elem()))
 	case reflect.Slice:

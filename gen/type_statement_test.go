@@ -75,13 +75,13 @@ func TestTypeStatement(t *testing.T) {
 		notation: "gen.typedInt",
 	}, {
 		value:    typedArray{},
-		notation: "gen.typedInt",
+		notation: "gen.typedArray",
 	}, {
 		value:    typedSlice{},
-		notation: "gen.typedInt",
+		notation: "gen.typedSlice",
 	}, {
 		value:    make(typedChan, 0),
-		notation: "gen.typedInt",
+		notation: "gen.typedChan",
 	}, {
 		value:    testStruct{},
 		notation: "gen.testStruct",
