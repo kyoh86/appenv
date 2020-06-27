@@ -80,7 +80,7 @@ func TestTypeStatement(t *testing.T) {
 		value:    typedSlice{},
 		notation: "gen.typedSlice",
 	}, {
-		value:    make(typedChan, 0),
+		value:    make(typedChan),
 		notation: "gen.typedChan",
 	}, {
 		value:    testStruct{},
@@ -101,13 +101,13 @@ func TestTypeStatement(t *testing.T) {
 		value:    []struct{}{},
 		notation: "[]struct{}",
 	}, {
-		value:    make(chan struct{}, 0),
+		value:    make(chan struct{}),
 		notation: "chan struct{}",
 	}, {
-		value:    make(<-chan struct{}, 0),
+		value:    make(<-chan struct{}),
 		notation: "<-chan struct{}",
 	}, {
-		value:    make(chan<- struct{}, 0),
+		value:    make(chan<- struct{}),
 		notation: "chan<- struct{}",
 	}, {
 		value:    &struct{}{},
