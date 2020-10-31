@@ -4,19 +4,19 @@ import (
 	"strconv"
 )
 
-type BoolPropertyBase struct {
+type BoolOptionBase struct {
 	value bool
 }
 
-func (o *BoolPropertyBase) Value() interface{} {
+func (o *BoolOptionBase) Value() interface{} {
 	return o.value
 }
 
-func (o *BoolPropertyBase) MarshalText() (text []byte, err error) {
+func (o *BoolOptionBase) MarshalText() (text []byte, err error) {
 	return []byte(strconv.FormatBool(o.value)), nil
 }
 
-func (o *BoolPropertyBase) UnmarshalText(text []byte) error {
+func (o *BoolOptionBase) UnmarshalText(text []byte) error {
 	v, err := strconv.ParseBool(string(text))
 	if err != nil {
 		return err
@@ -25,8 +25,8 @@ func (o *BoolPropertyBase) UnmarshalText(text []byte) error {
 	return nil
 }
 
-func (o *BoolPropertyBase) Default() interface{} {
+func (o *BoolOptionBase) Default() interface{} {
 	return false
 }
 
-var _ Value = (*BoolPropertyBase)(nil)
+var _ Value = (*BoolOptionBase)(nil)

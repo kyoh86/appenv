@@ -4,19 +4,19 @@ import (
 	"strconv"
 )
 
-type Float64PropertyBase struct {
+type Float64OptionBase struct {
 	value float64
 }
 
-func (o *Float64PropertyBase) Value() interface{} {
+func (o *Float64OptionBase) Value() interface{} {
 	return o.value
 }
 
-func (o *Float64PropertyBase) MarshalText() (text []byte, err error) {
+func (o *Float64OptionBase) MarshalText() (text []byte, err error) {
 	return []byte(strconv.FormatFloat(float64(o.value), 'f', -1, 64)), nil
 }
 
-func (o *Float64PropertyBase) UnmarshalText(text []byte) error {
+func (o *Float64OptionBase) UnmarshalText(text []byte) error {
 	v, err := strconv.ParseFloat(string(text), 64)
 	if err != nil {
 		return err
@@ -25,8 +25,8 @@ func (o *Float64PropertyBase) UnmarshalText(text []byte) error {
 	return nil
 }
 
-func (o *Float64PropertyBase) Default() interface{} {
+func (o *Float64OptionBase) Default() interface{} {
 	return float64(0)
 }
 
-var _ Value = (*Float64PropertyBase)(nil)
+var _ Value = (*Float64OptionBase)(nil)

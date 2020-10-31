@@ -29,13 +29,13 @@ implement `appenv/types.Value` that
 have `Value()`, `Default()`, `MarshalText` and `UnmarshalText`.
 
 If you want to define a primitive (like `string`) option,
-you can embed `types.XXXPropertyBase` like below.
+you can embed `types.XXXOptionBase` like below.
 
 Sample:
 
 ```go
-type GithubToken struct {
-	types.StringPropertyBase
+type Token struct {
+	types.StringOptionBase
 }
 ```
 
@@ -51,9 +51,9 @@ instance and call its `Do` function with some options:
 - Output directory
 - Option properties
 
-Option properties are built by `appenv/gen.Prop` from
+Option properties are built by `appenv/gen.Opt` from
 `Value` s that you defined in above.
-`gen.Prop` receives `Store` options that specify 
+`gen.Opt` receives `Store` options that specify 
 where the option will be stored to or loaded from.
 
 Now `appenv` supports some Stores like below.
@@ -74,7 +74,7 @@ import (
 	"log"
 
 	"github.com/kyoh86/appenv/gen"
-	"github.com/kyoh86/gogh/env"
+	"github.com/kyoh86/appenv/env"
 )
 
 //go:generate go run -tags generate ./main.go
@@ -83,9 +83,9 @@ func main() {
 	g := &gen.Generator{}
 
 	if err := g.Do(
-		"github.com/kyoh86/gogh/env",
+		"github.com/kyoh86/appenv/env",
 		"../",
-		gen.Prop(new(env.GithubToken), gen.YAML(), gen.Keyring(), gen.Envar()),
+		gen.Opt(new(env.Token), gen.YAML(), gen.Keyring(), gen.Envar()),
 	); err != nil {
 		log.Fatal(err)
 	}
@@ -102,9 +102,9 @@ i.e. You may create the generation shell script (or Makefile or ...).
 
 ```sh
 appenv-gen \
-  -package github.com/kyoh86/gogh/env \
+  -package github.com/kyoh86/appenv/env \
   -outdir ../ \
-  -prop github.com/kyoh86/gogh/env.GithubToken -store keyring -store envar
+  -prop github.com/kyoh86/appenv/env.Token -store keyring -store envar
 ```
 
 I think that we can read and maintin go code easier than shell script.
@@ -124,18 +124,18 @@ Generated codes can be used like below.
 ```go
 import (
 	// Import generated package
-	"github.com/kyoh86/gogh/env"
+	"github.com/kyoh86/appenv/env"
 )
 
 const (
-  configFile     = "~/.config/gogh/config.yaml"
-  keyringService = "gogh.kyoh86.dev" // any unique service name
-  envarPrefix    = "GOGH_" 
+  configFile     = "~/.config/appenv/config.yaml"
+  keyringService = "appenv.kyoh86.dev" // any unique service name
+  envarPrefix    = "APPENV_" 
 )
 
 file, _ := os.Open(configFile)
 access, _ := env.GetAccess(file, keyringService, envarPrefix)
-println(access.GithubToken())
+println(access.Token())
 ```
 
 #### To change configure
@@ -143,18 +143,18 @@ println(access.GithubToken())
 ```go
 import (
 	// Import generated package
-	"github.com/kyoh86/gogh/env"
+	"github.com/kyoh86/appenv/env"
 )
 
 const (
-  configFile     = "~/.config/gogh/config.yaml"
-  keyringService = "gogh.kyoh86.dev" // any unique service name
-  envarPrefix    = "GOGH_" 
+  configFile     = "~/.config/appenv/config.yaml"
+  keyringService = "appenv.kyoh86.dev" // any unique service name
+  envarPrefix    = "APPENV_" 
 )
 
 file, _ := os.Open(configFile)
 config, _ := env.GetConfig(file, keyringService, envarPrefix)
-githubToken, _ := config.Property("github.token")
+githubToken, _ := config.Option("github.token")
 githubToken.Set("foobar")
 config.SaveFile(file, keyringService) // NOTE: Envar will not exported.
 ```
