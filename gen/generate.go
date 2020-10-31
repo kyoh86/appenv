@@ -303,6 +303,11 @@ func (g *Generator) genConfig(file *jen.File, properties []*Property) {
 								jen.Id("parent"): jen.Id("a"),
 							}), jen.Nil()))
 
+						// Add property func
+						file.Func().Params(jen.Id("a").Id("*Config")).Id(p.name).Params().Params(jen.Qual(pkgTypes, "Config")).Block(
+							jen.Return(jen.Id("&" + p.camelName + "Config").Values(jen.Dict{jen.Id("parent"): jen.Id("a")})),
+						)
+
 						// Build Poperty Config
 						file.Type().Id(p.camelName + "Config").Struct(
 							jen.Id("parent").Id("*Config"),
@@ -342,7 +347,7 @@ func (g *Generator) genConfig(file *jen.File, properties []*Property) {
 					}
 				}),
 				jen.Return(jen.Nil(), jen.Qual("fmt", "Errorf").Call(jen.Lit("invalid property name %q"), jen.Id("name"))),
-			)
+			).Line()
 		}),
 	).Line()
 
