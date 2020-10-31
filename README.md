@@ -53,8 +53,8 @@ instance and call its `Do` function with some options:
 
 Option properties are built by `appenv/gen.Prop` from
 `Value` s that you defined in above.
-`gen.Prop` receives `Store` properties that specify 
-where the property will be stored to or loaded from.
+`gen.Prop` receives `Store` options that specify 
+where the option will be stored to or loaded from.
 
 Now `appenv` supports some Stores like below.
 
@@ -62,7 +62,7 @@ Now `appenv` supports some Stores like below.
 - Keyring
 - Envar (environment variable)
 
-Each properties can store to / be loaded from multiple `Store`
+Each option can store to / be loaded from multiple `Store`
 like `YAML`, `Keyring` and `Envar`.
 
 ```go
