@@ -18,7 +18,7 @@ So appenv generates codes to do it.
 
 ## Usage
 
-Read documents: [pkg.go.dev](https://pkg.go.dev/github.com/kyoh86/appenv/gen)
+Read documents: [pkg.go.dev](https://pkg.go.dev/github.com/kyoh86/appenv)
 
 ## WHY?
 
@@ -32,7 +32,7 @@ i.e. You may create the generation shell script (or Makefile or ...).
 appenv-gen \
   -package github.com/kyoh86/appenv/env \
   -outdir ../ \
-  -prop github.com/kyoh86/appenv/env.Token -store keyring -store envar
+  -opt github.com/kyoh86/appenv/env.Token -store keyring -store envar
 ```
 
 I think that we can read and maintin go code easier than shell script.

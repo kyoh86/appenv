@@ -2,19 +2,19 @@ package extypes
 
 import "time"
 
-type TimePropertyBase struct {
+type TimeValue struct {
 	value time.Time
 }
 
-func (o *TimePropertyBase) Value() interface{} {
+func (o *TimeValue) Value() interface{} {
 	return o.value
 }
 
-func (o *TimePropertyBase) MarshalText() (text []byte, err error) {
+func (o *TimeValue) MarshalText() (text []byte, err error) {
 	return []byte(o.value.Format(time.RFC3339)), nil
 }
 
-func (o *TimePropertyBase) UnmarshalText(text []byte) error {
+func (o *TimeValue) UnmarshalText(text []byte) error {
 	t, err := time.Parse(time.RFC3339, string(text))
 	if err != nil {
 		return err
@@ -23,6 +23,6 @@ func (o *TimePropertyBase) UnmarshalText(text []byte) error {
 	return nil
 }
 
-func (o *TimePropertyBase) Default() interface{} {
+func (o *TimeValue) Default() interface{} {
 	return time.Time{}
 }

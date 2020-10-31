@@ -1,4 +1,4 @@
-package gen_test
+package appenv_test
 
 import (
 	"fmt"

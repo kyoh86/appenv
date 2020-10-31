@@ -33,11 +33,11 @@ func (c *Config) Save(yamlWriter io.Writer) error {
 	return nil
 }
 
-func PropertyNames() []string {
+func OptionNames() []string {
 	return []string{"token", "host.name", "dry.run"}
 }
 
-func (a *Config) Property(name string) (types.Config, error) {
+func (a *Config) Option(name string) (types.Config, error) {
 	switch name {
 	case "token":
 		return &tokenConfig{parent: a}, nil
@@ -46,7 +46,7 @@ func (a *Config) Property(name string) (types.Config, error) {
 	case "dry.run":
 		return &dryRunConfig{parent: a}, nil
 	}
-	return nil, fmt.Errorf("invalid property name %q", name)
+	return nil, fmt.Errorf("invalid option name %q", name)
 }
 
 func (a *Config) Token() types.Config {
