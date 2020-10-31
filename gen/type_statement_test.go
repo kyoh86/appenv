@@ -68,7 +68,7 @@ func TestTypeStatement(t *testing.T) {
 		value:    complex128(0),
 		notation: "complex128",
 	}, {
-		value:    string(0),
+		value:    string(""),
 		notation: "string",
 	}, {
 		value:    typedInt(0),
