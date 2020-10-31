@@ -53,7 +53,7 @@ func Prop(value types.Value, s Store, stores ...Store) (d *Property) {
 }
 
 // Property describes environment property.
-// It is in internal package, and it can be generated with prop.Prop.
+// It is in internal package, and it can be generated with gen.Prop.
 type Property struct {
 	pkgPath string
 	name    string
