@@ -44,19 +44,56 @@ func (c *Config) Save(yamlWriter io.Writer, keyringService string) error {
 }
 
 func PropertyNames() []string {
-	return []string{"host.name", "dry.run", "token"}
+	return []string{"token", "host.name", "dry.run"}
 }
 
 func (a *Config) Property(name string) (types.Config, error) {
 	switch name {
+	case "token":
+		return &tokenConfig{parent: a}, nil
 	case "host.name":
 		return &hostNameConfig{parent: a}, nil
 	case "dry.run":
 		return &dryRunConfig{parent: a}, nil
-	case "token":
-		return &tokenConfig{parent: a}, nil
 	}
 	return nil, fmt.Errorf("invalid property name %q", name)
+}
+
+func (a *Config) Token() types.Config {
+	return &tokenConfig{parent: a}
+}
+
+type tokenConfig struct {
+	parent *Config
+}
+
+func (a *tokenConfig) Get() (string, error) {
+	{
+		p := a.parent.keyring.Token
+		if p != nil {
+			text, err := p.MarshalText()
+			return string(text), err
+		}
+	}
+	return "", nil
+}
+
+func (a *tokenConfig) Set(value string) error {
+	{
+		p := a.parent.keyring.Token
+		if p == nil {
+			p = new(appenv.Token)
+		}
+		if err := p.UnmarshalText([]byte(value)); err != nil {
+			return err
+		}
+		a.parent.keyring.Token = p
+	}
+	return nil
+}
+
+func (a *tokenConfig) Unset() {
+	a.parent.keyring.Token = nil
 }
 
 func (a *Config) HostName() types.Config {
@@ -113,40 +150,3 @@ func (a *dryRunConfig) Set(value string) error {
 }
 
 func (a *dryRunConfig) Unset() {}
-
-func (a *Config) Token() types.Config {
-	return &tokenConfig{parent: a}
-}
-
-type tokenConfig struct {
-	parent *Config
-}
-
-func (a *tokenConfig) Get() (string, error) {
-	{
-		p := a.parent.keyring.Token
-		if p != nil {
-			text, err := p.MarshalText()
-			return string(text), err
-		}
-	}
-	return "", nil
-}
-
-func (a *tokenConfig) Set(value string) error {
-	{
-		p := a.parent.keyring.Token
-		if p == nil {
-			p = new(appenv.Token)
-		}
-		if err := p.UnmarshalText([]byte(value)); err != nil {
-			return err
-		}
-		a.parent.keyring.Token = p
-	}
-	return nil
-}
-
-func (a *tokenConfig) Unset() {
-	a.parent.keyring.Token = nil
-}

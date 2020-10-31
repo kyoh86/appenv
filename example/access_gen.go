@@ -25,6 +25,11 @@ func buildAccess(yml YAML, keyringService string, envarPrefix string) (access Ac
 	if err != nil {
 		return access, err
 	}
+	access.token = new(appenv.Token).Default().(string)
+	if keyring.Token != nil {
+		access.token = keyring.Token.Value().(string)
+	}
+
 	access.hostName = new(appenv.HostName).Default().(string)
 	if yml.HostName != nil {
 		access.hostName = yml.HostName.Value().(string)
@@ -38,18 +43,17 @@ func buildAccess(yml YAML, keyringService string, envarPrefix string) (access Ac
 		access.dryRun = envar.DryRun.Value().(bool)
 	}
 
-	access.token = new(appenv.Token).Default().(string)
-	if keyring.Token != nil {
-		access.token = keyring.Token.Value().(string)
-	}
-
 	return
 }
 
 type Access struct {
+	token    string
 	hostName string
 	dryRun   bool
-	token    string
+}
+
+func (a *Access) Token() string {
+	return a.token
 }
 
 func (a *Access) HostName() string {
@@ -58,8 +62,4 @@ func (a *Access) HostName() string {
 
 func (a *Access) DryRun() bool {
 	return a.dryRun
-}
-
-func (a *Access) Token() string {
-	return a.token
 }
