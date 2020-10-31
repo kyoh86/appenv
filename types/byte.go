@@ -4,19 +4,19 @@ import (
 	"strconv"
 )
 
-type ByteOptionBase struct {
+type BytePropertyBase struct {
 	value byte
 }
 
-func (o *ByteOptionBase) Value() interface{} {
+func (o *BytePropertyBase) Value() interface{} {
 	return o.value
 }
 
-func (o *ByteOptionBase) MarshalText() (text []byte, err error) {
+func (o *BytePropertyBase) MarshalText() (text []byte, err error) {
 	return []byte(strconv.FormatInt(int64(o.value), 10)), nil
 }
 
-func (o *ByteOptionBase) UnmarshalText(text []byte) error {
+func (o *BytePropertyBase) UnmarshalText(text []byte) error {
 	v, err := strconv.ParseInt(string(text), 10, 8)
 	if err != nil {
 		return err
@@ -25,8 +25,8 @@ func (o *ByteOptionBase) UnmarshalText(text []byte) error {
 	return nil
 }
 
-func (o *ByteOptionBase) Default() interface{} {
+func (o *BytePropertyBase) Default() interface{} {
 	return byte(0)
 }
 
-var _ Value = (*ByteOptionBase)(nil)
+var _ Value = (*BytePropertyBase)(nil)

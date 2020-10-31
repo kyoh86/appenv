@@ -2,19 +2,19 @@ package extypes
 
 import "net/url"
 
-type URLOptionBase struct {
+type URLPropertyBase struct {
 	value url.URL
 }
 
-func (o *URLOptionBase) Value() interface{} {
+func (o *URLPropertyBase) Value() interface{} {
 	return o.value
 }
 
-func (o *URLOptionBase) MarshalText() (text []byte, err error) {
+func (o *URLPropertyBase) MarshalText() (text []byte, err error) {
 	return []byte(o.value.String()), nil
 }
 
-func (o *URLOptionBase) UnmarshalText(text []byte) error {
+func (o *URLPropertyBase) UnmarshalText(text []byte) error {
 	u, err := url.Parse(string(text))
 	if err != nil {
 		return err
@@ -23,6 +23,6 @@ func (o *URLOptionBase) UnmarshalText(text []byte) error {
 	return nil
 }
 
-func (o *URLOptionBase) Default() interface{} {
+func (o *URLPropertyBase) Default() interface{} {
 	return url.URL{}
 }

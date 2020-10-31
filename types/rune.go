@@ -2,19 +2,19 @@ package types
 
 import "errors"
 
-type RuneOptionBase struct {
+type RunePropertyBase struct {
 	value rune
 }
 
-func (o *RuneOptionBase) Value() interface{} {
+func (o *RunePropertyBase) Value() interface{} {
 	return o.value
 }
 
-func (o *RuneOptionBase) MarshalText() (text []byte, err error) {
+func (o *RunePropertyBase) MarshalText() (text []byte, err error) {
 	return []byte(string([]rune{o.value})), nil
 }
 
-func (o *RuneOptionBase) UnmarshalText(text []byte) error {
+func (o *RunePropertyBase) UnmarshalText(text []byte) error {
 	runes := []rune(string(text))
 	if len(runes) != 1 {
 		return errors.New("invalid rune")
@@ -23,8 +23,8 @@ func (o *RuneOptionBase) UnmarshalText(text []byte) error {
 	return nil
 }
 
-func (o *RuneOptionBase) Default() interface{} {
+func (o *RunePropertyBase) Default() interface{} {
 	return rune(0)
 }
 
-var _ Value = (*RuneOptionBase)(nil)
+var _ Value = (*RunePropertyBase)(nil)

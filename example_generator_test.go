@@ -5,22 +5,22 @@ import (
 	"github.com/kyoh86/appenv/types"
 )
 
-// HostName is the string option
+// HostName is the string property
 type HostName struct {
-	types.StringOptionBase
+	types.StringPropertyBase
 }
 
-// Default is the default value for host-name option
+// Default is the default value for host-name property
 func (*HostName) Default() interface{} {
 	return "kyoh86.dev"
 }
 
 type DryRun struct {
-	types.BoolOptionBase
+	types.BoolPropertyBase
 }
 
 type Token struct {
-	types.StringOptionBase
+	types.StringPropertyBase
 }
 
 func Example_generator() {
@@ -35,12 +35,12 @@ func Example_generator() {
 	if err := generator.Do(
 		outputPackagePath,
 		outputDir,
-		// "hostName" option in the YAML file and DRY_RUN environment variable
-		gen.Opt(new(HostName), gen.YAML(), gen.Envar()),
-		// "DRY_RUN" option in the environment variable
-		gen.Opt(new(DryRun), gen.Envar()),
-		// "Token" option in the Keyring
-		gen.Opt(new(Token), gen.Keyring()),
+		// "hostName" property in the YAML file and DRY_RUN environment variable
+		gen.Prop(new(HostName), gen.YAML(), gen.Envar()),
+		// "DRY_RUN" property in the environment variable
+		gen.Prop(new(DryRun), gen.Envar()),
+		// "Token" property in the Keyring
+		gen.Prop(new(Token), gen.Keyring()),
 	); err != nil {
 		panic(err)
 	}

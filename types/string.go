@@ -1,24 +1,24 @@
 package types
 
-type StringOptionBase struct {
+type StringPropertyBase struct {
 	value string
 }
 
-func (o *StringOptionBase) Value() interface{} {
+func (o *StringPropertyBase) Value() interface{} {
 	return o.value
 }
 
-func (o *StringOptionBase) MarshalText() (text []byte, err error) {
+func (o *StringPropertyBase) MarshalText() (text []byte, err error) {
 	return []byte(o.value), nil
 }
 
-func (o *StringOptionBase) UnmarshalText(text []byte) error {
+func (o *StringPropertyBase) UnmarshalText(text []byte) error {
 	o.value = string(text)
 	return nil
 }
 
-func (o *StringOptionBase) Default() interface{} {
+func (o *StringPropertyBase) Default() interface{} {
 	return ""
 }
 
-var _ Value = (*StringOptionBase)(nil)
+var _ Value = (*StringPropertyBase)(nil)

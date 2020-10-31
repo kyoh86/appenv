@@ -10,25 +10,25 @@ import (
 )
 
 type Store interface {
-	mark(d *Option)
+	mark(d *Property)
 }
 
-type storeFunc func(d *Option)
+type storeFunc func(d *Property)
 
-func (f storeFunc) mark(d *Option) {
+func (f storeFunc) mark(d *Property) {
 	f(d)
 }
 
 // NOTE: StoreXXX must not be merged to the Value.
 // They can be expand for other storages, but that is NOT
-// realistic to implement all of them in all of options.
+// realistic to implement all of them in all of properties.
 
-func YAML() Store    { return storeFunc(func(d *Option) { d.storeYAML = true }) }
-func Envar() Store   { return storeFunc(func(d *Option) { d.storeEnvar = true }) }
-func Keyring() Store { return storeFunc(func(d *Option) { d.storeKeyring = true }) }
+func YAML() Store    { return storeFunc(func(d *Property) { d.storeYAML = true }) }
+func Envar() Store   { return storeFunc(func(d *Property) { d.storeEnvar = true }) }
+func Keyring() Store { return storeFunc(func(d *Property) { d.storeKeyring = true }) }
 
-func Opt(value types.Value, s Store, stores ...Store) (d *Option) {
-	d = new(Option)
+func Prop(value types.Value, s Store, stores ...Store) (d *Property) {
+	d = new(Property)
 	typ := reflect.ValueOf(value).Type()
 	for typ.Kind() == reflect.Ptr {
 		typ = typ.Elem()
@@ -52,9 +52,9 @@ func Opt(value types.Value, s Store, stores ...Store) (d *Option) {
 	return
 }
 
-// Option describes environment option.
-// It is in internal package, and it can be generated with gen.Opt.
-type Option struct {
+// Property describes environment property.
+// It is in internal package, and it can be generated with gen.Prop.
+type Property struct {
 	pkgPath string
 	name    string
 
