@@ -347,7 +347,7 @@ func (g *Generator) genConfig(file *jen.File, properties []*Property) {
 					}
 				}),
 				jen.Return(jen.Nil(), jen.Qual("fmt", "Errorf").Call(jen.Lit("invalid property name %q"), jen.Id("name"))),
-			)
+			).Line()
 		}),
 	).Line()
 
