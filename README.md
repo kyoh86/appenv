@@ -18,7 +18,7 @@ So appenv generates codes to do it.
 
 ## Usage
 
-Read documents: [pkg.go.dev](https://pkg.go.dev/github.com/kyoh86/appenv/gen)
+Read documents: [pkg.go.dev](https://pkg.go.dev/github.com/kyoh86/appenv)
 
 ## WHY?
 

@@ -1,6 +1,6 @@
-// Package gen build a option handlers to manage Application options.
+// Package appenv build a option handlers to manage application options.
 //
-// Index
+// Usage index
 //
 // Using this library, follow each step below.
 //
@@ -34,10 +34,10 @@
 //
 // `appenv` does NOT provide any tools like `xxx-generate`.
 // Creating a main package, calling it, you can get the code.
-// To generate, you may call `appenv/gen.Generate` function with option properties.
+// To generate, you may call `appenv.Generate` function with option properties.
 //
-// Option properties are built by `appenv/gen.Prop` from `Value`s that you defined in above.
-// `gen.Prop` receives `Store` options that specify where the option will be stored to or loaded from.
+// Option properties are built by `appenv.Prop` from `Value`s that you defined in above.
+// `appenv.Prop` receives `Store` options that specify where the option will be stored to or loaded from.
 // Now `appenv` supports Stores: YAML file, keyring or environment variables
 //
 // Each option can store to / be loaded from multiple `Store`.
@@ -55,4 +55,4 @@
 // Configure options with generated function
 //
 // See: Example (GetConfig)
-package gen
+package appenv

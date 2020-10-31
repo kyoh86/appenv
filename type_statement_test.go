@@ -1,4 +1,4 @@
-package gen
+package appenv
 
 import (
 	"bytes"
@@ -72,19 +72,19 @@ func TestTypeStatement(t *testing.T) {
 		notation: "string",
 	}, {
 		value:    typedInt(0),
-		notation: "gen.typedInt",
+		notation: "appenv.typedInt",
 	}, {
 		value:    typedArray{},
-		notation: "gen.typedArray",
+		notation: "appenv.typedArray",
 	}, {
 		value:    typedSlice{},
-		notation: "gen.typedSlice",
+		notation: "appenv.typedSlice",
 	}, {
 		value:    make(typedChan),
-		notation: "gen.typedChan",
+		notation: "appenv.typedChan",
 	}, {
 		value:    testStruct{},
-		notation: "gen.testStruct",
+		notation: "appenv.testStruct",
 	}, {
 		value:    struct{}{},
 		notation: "struct{}",

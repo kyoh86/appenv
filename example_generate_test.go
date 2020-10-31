@@ -1,7 +1,7 @@
-package gen_test
+package appenv_test
 
 import (
-	"github.com/kyoh86/appenv/gen"
+	"github.com/kyoh86/appenv"
 	"github.com/kyoh86/appenv/internal/def"
 )
 
@@ -10,17 +10,17 @@ var _ = "keep"
 func Example_generate() {
 	var (
 		outputPackagePath = "github.com/kyoh86/appenv/internal/out"
-		outputDir         = "../internal/out"
+		outputDir         = "./internal/out"
 	)
-	if err := gen.Generate(
+	if err := appenv.Generate(
 		outputPackagePath,
 		outputDir,
 		// "Token" property in the YAML file
-		gen.Prop(new(def.Token), gen.YAML()),
+		appenv.Prop(new(def.Token), appenv.YAML()),
 		// "hostName" property in the YAML file and DRY_RUN environment variable
-		gen.Prop(new(def.HostName), gen.YAML(), gen.Envar()),
+		appenv.Prop(new(def.HostName), appenv.YAML(), appenv.Envar()),
 		// "DRY_RUN" property in the environment variable
-		gen.Prop(new(def.DryRun), gen.Envar()),
+		appenv.Prop(new(def.DryRun), appenv.Envar()),
 	); err != nil {
 		panic(err)
 	}
