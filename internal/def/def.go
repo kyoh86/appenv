@@ -6,12 +6,12 @@ import (
 
 // Token is a string option
 type Token struct {
-	types.StringPropertyBase
+	types.StringValue
 }
 
 // HostName is a string option with default value
 type HostName struct {
-	types.StringPropertyBase
+	types.StringValue
 }
 
 // Default is the default value for host-name option
@@ -21,5 +21,5 @@ func (*HostName) Default() interface{} {
 
 // DryRun is a boolean option
 type DryRun struct {
-	types.BoolPropertyBase
+	types.BoolValue
 }

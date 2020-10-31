@@ -1,24 +1,24 @@
 package types
 
-type StringPropertyBase struct {
+type StringValue struct {
 	value string
 }
 
-func (o *StringPropertyBase) Value() interface{} {
+func (o *StringValue) Value() interface{} {
 	return o.value
 }
 
-func (o *StringPropertyBase) MarshalText() (text []byte, err error) {
+func (o *StringValue) MarshalText() (text []byte, err error) {
 	return []byte(o.value), nil
 }
 
-func (o *StringPropertyBase) UnmarshalText(text []byte) error {
+func (o *StringValue) UnmarshalText(text []byte) error {
 	o.value = string(text)
 	return nil
 }
 
-func (o *StringPropertyBase) Default() interface{} {
+func (o *StringValue) Default() interface{} {
 	return ""
 }
 
-var _ Value = (*StringPropertyBase)(nil)
+var _ Value = (*StringValue)(nil)

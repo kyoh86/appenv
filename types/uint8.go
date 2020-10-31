@@ -4,19 +4,19 @@ import (
 	"strconv"
 )
 
-type Uint8PropertyBase struct {
+type Uint8Value struct {
 	value uint8
 }
 
-func (o *Uint8PropertyBase) Value() interface{} {
+func (o *Uint8Value) Value() interface{} {
 	return o.value
 }
 
-func (o *Uint8PropertyBase) MarshalText() (text []byte, err error) {
+func (o *Uint8Value) MarshalText() (text []byte, err error) {
 	return []byte(strconv.FormatUint(uint64(o.value), 10)), nil
 }
 
-func (o *Uint8PropertyBase) UnmarshalText(text []byte) error {
+func (o *Uint8Value) UnmarshalText(text []byte) error {
 	v, err := strconv.ParseUint(string(text), 10, 8)
 	if err != nil {
 		return err
@@ -25,8 +25,8 @@ func (o *Uint8PropertyBase) UnmarshalText(text []byte) error {
 	return nil
 }
 
-func (o *Uint8PropertyBase) Default() interface{} {
+func (o *Uint8Value) Default() interface{} {
 	return uint8(0)
 }
 
-var _ Value = (*Uint8PropertyBase)(nil)
+var _ Value = (*Uint8Value)(nil)
