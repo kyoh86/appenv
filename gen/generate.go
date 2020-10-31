@@ -69,7 +69,7 @@ func (g *Generator) createFile(packagePath string) *jen.File {
 	return file
 }
 
-func (g *Generator) parseProperties(properties []*Property) {
+func (g *Generator) parseProps(properties []*Property) {
 	for _, p := range properties {
 		g.storeYAML = g.storeYAML || p.storeYAML
 		g.storeKeyring = g.storeKeyring || p.storeKeyring
@@ -529,7 +529,7 @@ func (g *Generator) Do(packagePath, outDir string, properties ...*Property) erro
 		return err
 	}
 
-	g.parseProperties(properties)
+	g.parseProps(properties)
 
 	accessFile := g.createFile(packagePath)
 	g.genAccess(accessFile, properties)

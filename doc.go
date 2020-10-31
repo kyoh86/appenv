@@ -1,4 +1,4 @@
 /*
-Package appenv Application properties manager for golang
+Package appenv Application options manager for golang
 */
 package appenv
