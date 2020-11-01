@@ -2,6 +2,7 @@
 
 Application options manager for golang
 
+[![PkgGoDev](https://pkg.go.dev/badge/kyoh86/appenv)](https://pkg.go.dev/kyoh86/appenv)
 [![Go Report Card](https://goreportcard.com/badge/github.com/kyoh86/appenv)](https://goreportcard.com/report/github.com/kyoh86/appenv)
 [![Coverage Status](https://img.shields.io/codecov/c/github/kyoh86/appenv.svg)](https://codecov.io/gh/kyoh86/appenv)
 
@@ -18,7 +19,8 @@ So appenv generates codes to do it.
 
 ## Usage
 
-Read documents: [pkg.go.dev](https://pkg.go.dev/github.com/kyoh86/appenv)
+Read documents: [![PkgGoDev](https://pkg.go.dev/badge/kyoh86/appenv)](https://pkg.go.dev/kyoh86/appenv)
+
 
 ## WHY?
 
