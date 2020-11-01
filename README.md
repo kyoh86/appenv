@@ -5,6 +5,7 @@ Application options manager for golang
 [![PkgGoDev](https://pkg.go.dev/badge/kyoh86/appenv)](https://pkg.go.dev/kyoh86/appenv)
 [![Go Report Card](https://goreportcard.com/badge/github.com/kyoh86/appenv)](https://goreportcard.com/report/github.com/kyoh86/appenv)
 [![Coverage Status](https://img.shields.io/codecov/c/github/kyoh86/appenv.svg)](https://codecov.io/gh/kyoh86/appenv)
+[![Release](https://github.com/kyoh86/appenv/workflows/Release/badge.svg)](https://github.com/kyoh86/appenv/releases)
 
 ## What's this?
 
