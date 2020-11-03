@@ -538,19 +538,19 @@ func (g *Generator) Render(packagePath string, manager fs.FileManager, options .
 
 	accessFile := g.createFile(packagePath)
 	g.genAccess(accessFile, options)
-	if err := renderFile(accessFile, manager, "access_gen.go"); err != nil {
+	if err := renderFile(accessFile, manager, AccessFile); err != nil {
 		return err
 	}
 
 	configFile := g.createFile(packagePath)
 	g.genConfig(configFile, options)
-	if err := renderFile(configFile, manager, "config_gen.go"); err != nil {
+	if err := renderFile(configFile, manager, ConfigFile); err != nil {
 		return err
 	}
 
 	appenvFile := g.createFile(packagePath)
 	g.genAppenv(appenvFile)
-	if err := renderFile(appenvFile, manager, "appenv_gen.go"); err != nil {
+	if err := renderFile(appenvFile, manager, AppenvFile); err != nil {
 		return err
 	}
 
@@ -558,7 +558,7 @@ func (g *Generator) Render(packagePath string, manager fs.FileManager, options .
 		ymlFile := g.createFile(packagePath)
 		ymlFile.ImportAlias(pkgYAML, "yaml")
 		g.genYAML(ymlFile, options)
-		if err := renderFile(ymlFile, manager, "yml_gen.go"); err != nil {
+		if err := renderFile(ymlFile, manager, YAMLFile); err != nil {
 			return err
 		}
 	}
@@ -567,7 +567,7 @@ func (g *Generator) Render(packagePath string, manager fs.FileManager, options .
 		keyringFile := g.createFile(packagePath)
 		keyringFile.ImportAlias(pkgKeyring, "keyring")
 		g.genKeyring(keyringFile, options)
-		if err := renderFile(keyringFile, manager, "keyring_gen.go"); err != nil {
+		if err := renderFile(keyringFile, manager, KeyringFile); err != nil {
 			return err
 		}
 	}
@@ -575,7 +575,7 @@ func (g *Generator) Render(packagePath string, manager fs.FileManager, options .
 	if g.storeEnvar {
 		envarFile := g.createFile(packagePath)
 		g.genEnvar(envarFile, options)
-		if err := renderFile(envarFile, manager, "envar_gen.go"); err != nil {
+		if err := renderFile(envarFile, manager, EnvarFile); err != nil {
 			return err
 		}
 	}
