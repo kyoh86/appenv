@@ -17,16 +17,15 @@ func loadKeyring(keyringConfig *keyring.Config) (key Keyring, err error) {
 	}
 	{
 		ring, err := keyring.Open(*keyringConfig)
-		if err != nil {
-			return key, err
-		}
-		item, err := ring.Get("token")
 		if err == nil {
-			var value def.Token
-			if err = value.UnmarshalText(item.Data); err != nil {
-				return key, err
+			item, err := ring.Get("token")
+			if err == nil {
+				var value def.Token
+				if err = value.UnmarshalText(item.Data); err != nil {
+					return key, err
+				}
+				key.Token = &value
 			}
-			key.Token = &value
 		}
 	}
 	return
