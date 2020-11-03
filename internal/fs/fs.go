@@ -30,10 +30,10 @@ func (b Memory) Open(filename string) (io.WriteCloser, error) {
 	return b[filename], nil
 }
 
-func (b Memory) Result(filename string) []byte {
+func (b Memory) Result(filename string) string {
 	buffer, ok := b[filename]
 	if !ok {
-		return nil
+		return ""
 	}
-	return buffer.Bytes()
+	return buffer.String()
 }

@@ -1,10 +1,12 @@
 package appenv
 
 import (
+	"bytes"
 	"fmt"
 
 	"github.com/dave/jennifer/jen"
 	"github.com/kyoh86/appenv/internal/fs"
+	"golang.org/x/tools/imports"
 )
 
 // Generate a configuration handlers from options.
@@ -74,12 +76,19 @@ func (g *Generator) genAccess(file *jen.File, options []*option) {
 				jen.Return(jen.Id("access"), jen.Err()),
 			)
 		}
+		if g.storeKeyring {
+			accessCodes.List(jen.Id("keyring"), jen.Err()).
+				Op(":=").Id("loadKeyring").Call(jen.Id("keyringService"))
+			accessCodes.If(jen.Err().Op("!=").Nil()).Block(
+				jen.Return(jen.Id("access"), jen.Err()),
+			)
+		}
 		accessCodes.Return(jen.Id("buildAccess").CallFunc(func(paramCodes *jen.Group) {
 			if g.storeYAML {
 				paramCodes.Add(jen.Id("yml"))
 			}
 			if g.storeKeyring {
-				paramCodes.Add(jen.Id("keyringService"))
+				paramCodes.Add(jen.Id("keyring"))
 			}
 			if g.storeEnvar {
 				paramCodes.Add(jen.Id("envarPrefix"))
@@ -92,19 +101,12 @@ func (g *Generator) genAccess(file *jen.File, options []*option) {
 			accessParams.Id("yml").Id("YAML")
 		}
 		if g.storeKeyring {
-			accessParams.Id("keyringService").String()
+			accessParams.Id("keyring").Id("Keyring")
 		}
 		if g.storeEnvar {
 			accessParams.Id("envarPrefix").String()
 		}
 	}).Params(jen.Id("access").Id("Access"), jen.Err().Id("error")).BlockFunc(func(accessCodes *jen.Group) {
-		if g.storeKeyring {
-			accessCodes.List(jen.Id("keyring"), jen.Err()).
-				Op(":=").Id("loadKeyring").Call(jen.Id("keyringService"))
-			accessCodes.If(jen.Err().Op("!=").Nil()).Block(
-				jen.Return(jen.Id("access"), jen.Err()),
-			)
-		}
 		if g.storeEnvar {
 			accessCodes.List(jen.Id("envar"), jen.Err()).
 				Op(":=").Id("getEnvar").Call(jen.Id("envarPrefix"))
@@ -162,13 +164,20 @@ func (g *Generator) genAppenv(file *jen.File) {
 				jen.Return(jen.Id("config"), jen.Id("access"), jen.Err()),
 			)
 		}
+		if g.storeKeyring {
+			getAppenvCodes.List(jen.Id("keyring"), jen.Err()).
+				Op(":=").Id("loadKeyring").Call(jen.Id("keyringService"))
+			getAppenvCodes.If(jen.Err().Op("!=").Nil()).Block(
+				jen.Return(jen.Id("config"), jen.Id("access"), jen.Err()),
+			)
+		}
 		getAppenvCodes.List(jen.Id("config"), jen.Err()).
 			Op("=").Id("buildConfig").CallFunc(func(paramCodes *jen.Group) {
 			if g.storeYAML {
 				paramCodes.Add(jen.Id("yml"))
 			}
 			if g.storeKeyring {
-				paramCodes.Add(jen.Id("keyringService"))
+				paramCodes.Add(jen.Id("keyring"))
 			}
 		})
 		getAppenvCodes.If(jen.Err().Op("!=").Nil()).Block(
@@ -180,7 +189,7 @@ func (g *Generator) genAppenv(file *jen.File) {
 				paramCodes.Add(jen.Id("yml"))
 			}
 			if g.storeKeyring {
-				paramCodes.Add(jen.Id("keyringService"))
+				paramCodes.Add(jen.Id("keyring"))
 			}
 			if g.storeEnvar {
 				paramCodes.Add(jen.Id("envarPrefix"))
@@ -218,12 +227,19 @@ func (g *Generator) genConfig(file *jen.File, options []*option) {
 				jen.Return(jen.Id("config"), jen.Err()),
 			)
 		}
+		if g.storeKeyring {
+			getConfigCodes.List(jen.Id("keyring"), jen.Err()).
+				Op(":=").Id("loadKeyring").Call(jen.Id("keyringService"))
+			getConfigCodes.If(jen.Err().Op("!=").Nil()).Block(
+				jen.Return(jen.Id("config"), jen.Err()),
+			)
+		}
 		getConfigCodes.Return(jen.Id("buildConfig").CallFunc(func(paramCodes *jen.Group) {
 			if g.storeYAML {
 				paramCodes.Add(jen.Id("yml"))
 			}
 			if g.storeKeyring {
-				paramCodes.Add(jen.Id("keyringService"))
+				paramCodes.Add(jen.Id("keyring"))
 			}
 		}))
 	}).Line()
@@ -233,16 +249,9 @@ func (g *Generator) genConfig(file *jen.File, options []*option) {
 			buildConfigParams.Id("yml").Id("YAML")
 		}
 		if g.storeKeyring {
-			buildConfigParams.Id("keyringService").String()
+			buildConfigParams.Id("keyring").Id("Keyring")
 		}
 	}).Params(jen.Id("config").Id("Config"), jen.Err().Id("error")).BlockFunc(func(buildConfigCodes *jen.Group) {
-		if g.storeKeyring {
-			buildConfigCodes.List(jen.Id("keyring"), jen.Err()).
-				Op(":=").Id("loadKeyring").Call(jen.Id("keyringService"))
-			buildConfigCodes.If(jen.Err().Op("!=").Nil()).Block(
-				jen.Return(jen.Id("config"), jen.Err()),
-			)
-		}
 		if g.storeYAML {
 			buildConfigCodes.Id("config").Dot("yml").Op("=").Id("yml")
 		}
@@ -285,6 +294,11 @@ func (g *Generator) genConfig(file *jen.File, options []*option) {
 				jen.Switch(jen.Id("name")).BlockFunc(func(optSwitch *jen.Group) {
 					for _, o := range options {
 						o := o
+
+						if !o.storeKeyring && !o.storeYAML {
+							continue
+						}
+
 						// Add option name
 						namesList.Lit(o.dottedName)
 
@@ -294,7 +308,7 @@ func (g *Generator) genConfig(file *jen.File, options []*option) {
 								jen.Id("parent"): jen.Id("a"),
 							}), jen.Nil()))
 
-						// Add option func
+							// Add option func
 						file.Func().Params(jen.Id("a").Id("*Config")).Id(o.name).Params().Params(jen.Qual(pkgTypes, "Config")).Block(
 							jen.Return(jen.Id("&" + o.camelName + "Config").Values(jen.Dict{jen.Id("parent"): jen.Id("a")})),
 						)
@@ -516,16 +530,18 @@ func (g *Generator) Render(packagePath string, manager fs.FileManager, options .
 		return err
 	}
 
-	configFile := g.createFile(packagePath)
-	g.genConfig(configFile, options)
-	if err := renderFile(configFile, manager, ConfigFile); err != nil {
-		return err
-	}
+	if g.storeYAML || g.storeKeyring {
+		configFile := g.createFile(packagePath)
+		g.genConfig(configFile, options)
+		if err := renderFile(configFile, manager, ConfigFile); err != nil {
+			return err
+		}
 
-	appenvFile := g.createFile(packagePath)
-	g.genAppenv(appenvFile)
-	if err := renderFile(appenvFile, manager, AppenvFile); err != nil {
-		return err
+		appenvFile := g.createFile(packagePath)
+		g.genAppenv(appenvFile)
+		if err := renderFile(appenvFile, manager, AppenvFile); err != nil {
+			return err
+		}
 	}
 
 	if g.storeYAML {
@@ -558,12 +574,23 @@ func (g *Generator) Render(packagePath string, manager fs.FileManager, options .
 }
 
 func renderFile(file *jen.File, manager fs.FileManager, name string) error {
+	var buf bytes.Buffer
+	if err := file.Render(&buf); err != nil {
+		return err
+	}
+	imported, err := imports.Process("", buf.Bytes(), nil)
+	if err != nil {
+		return err
+	}
 	output, err := manager.Open(name)
 	if err != nil {
 		return err
 	}
 	defer output.Close()
-	return file.Render(output)
+	if _, err := output.Write(imported); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (g *Generator) Do(packagePath, outDir string, options ...*option) error {

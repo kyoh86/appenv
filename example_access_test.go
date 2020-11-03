@@ -18,7 +18,7 @@ func Example_getAccess() {
 
 	// Get options from file and envar.
 	// out.GetAccess is generated function.
-	access, err := out.GetAccess(yamlFile, envarPrefix)
+	access, err := out.GetAccess(yamlFile, out.DiscardKeyringService, envarPrefix)
 	if err != nil {
 		panic(err)
 	}
@@ -26,6 +26,5 @@ func Example_getAccess() {
 	fmt.Println(access.Token())
 	fmt.Println(access.HostName())
 	//Output:
-	// xxxxx
 	// kyoh86.dev
 }

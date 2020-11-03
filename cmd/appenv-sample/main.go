@@ -1,16 +1,20 @@
-package appenv_test
+//+build generate
+
+package main
 
 import (
 	"github.com/kyoh86/appenv"
 	"github.com/kyoh86/appenv/internal/def"
 )
 
+//go:generate go run -tags generate .
+
 const (
 	outputPackagePath = "github.com/kyoh86/appenv/internal/out"
-	outputDir         = "./internal/out"
+	outputDir         = "../../internal/out"
 )
 
-func ExampleGenerate() {
+func main() {
 	if err := appenv.Generate(
 		outputPackagePath,
 		outputDir,
