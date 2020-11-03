@@ -2,14 +2,18 @@
 
 package out
 
-import "io"
+import (
+	"io"
 
-func GetAppenv(yamlReader io.Reader, keyringService string, envarPrefix string) (config Config, access Access, err error) {
+	"github.com/99designs/keyring"
+)
+
+func GetAppenv(yamlReader io.Reader, keyringConfig *keyring.Config, envarPrefix string) (config Config, access Access, err error) {
 	yml, err := loadYAML(yamlReader)
 	if err != nil {
 		return config, access, err
 	}
-	keyring, err := loadKeyring(keyringService)
+	keyring, err := loadKeyring(keyringConfig)
 	if err != nil {
 		return config, access, err
 	}

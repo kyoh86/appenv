@@ -18,7 +18,7 @@ func Example_getAccess() {
 
 	// Get options from file and envar.
 	// out.GetAccess is generated function.
-	access, err := out.GetAccess(yamlFile, out.DiscardKeyringService, envarPrefix)
+	access, err := out.GetAccess(yamlFile, nil, envarPrefix)
 	if err != nil {
 		panic(err)
 	}

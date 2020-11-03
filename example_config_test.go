@@ -14,7 +14,7 @@ func Example_getConfig() {
 
 	// Load current option from file and build handler.
 	// out.GetConfig is generated function.
-	config, err := out.GetConfig(yamlFile, out.DiscardKeyringService)
+	config, err := out.GetConfig(yamlFile, nil)
 	if err != nil {
 		panic(err)
 	}
@@ -25,7 +25,7 @@ func Example_getConfig() {
 	}
 
 	// Save to file (put to std-out for example
-	if err := config.Save(os.Stdout, out.DiscardKeyringService); err != nil {
+	if err := config.Save(os.Stdout, nil); err != nil {
 		panic(err)
 	}
 	//Unordered output:

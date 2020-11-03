@@ -5,15 +5,16 @@ package out
 import (
 	"io"
 
+	"github.com/99designs/keyring"
 	def "github.com/kyoh86/appenv/internal/def"
 )
 
-func GetAccess(yamlReader io.Reader, keyringService string, envarPrefix string) (access Access, err error) {
+func GetAccess(yamlReader io.Reader, keyringConfig *keyring.Config, envarPrefix string) (access Access, err error) {
 	yml, err := loadYAML(yamlReader)
 	if err != nil {
 		return access, err
 	}
-	keyring, err := loadKeyring(keyringService)
+	keyring, err := loadKeyring(keyringConfig)
 	if err != nil {
 		return access, err
 	}

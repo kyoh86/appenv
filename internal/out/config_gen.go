@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/99designs/keyring"
 	def "github.com/kyoh86/appenv/internal/def"
 	types "github.com/kyoh86/appenv/types"
 )
@@ -15,12 +16,12 @@ type Config struct {
 	keyring Keyring
 }
 
-func GetConfig(yamlReader io.Reader, keyringService string) (config Config, err error) {
+func GetConfig(yamlReader io.Reader, keyringConfig *keyring.Config) (config Config, err error) {
 	yml, err := loadYAML(yamlReader)
 	if err != nil {
 		return config, err
 	}
-	keyring, err := loadKeyring(keyringService)
+	keyring, err := loadKeyring(keyringConfig)
 	if err != nil {
 		return config, err
 	}
@@ -33,11 +34,11 @@ func buildConfig(yml YAML, keyring Keyring) (config Config, err error) {
 	return
 }
 
-func (c *Config) Save(yamlWriter io.Writer, keyringService string) error {
+func (c *Config) Save(yamlWriter io.Writer, keyringConfig *keyring.Config) error {
 	if err := saveYAML(yamlWriter, &c.yml); err != nil {
 		return err
 	}
-	if err := saveKeyring(keyringService, &c.keyring); err != nil {
+	if err := saveKeyring(keyringConfig, &c.keyring); err != nil {
 		return err
 	}
 	return nil

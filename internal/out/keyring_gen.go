@@ -3,25 +3,27 @@
 package out
 
 import (
+	"github.com/99designs/keyring"
 	def "github.com/kyoh86/appenv/internal/def"
-	keyring "github.com/zalando/go-keyring"
 )
-
-const DiscardKeyringService string = ""
 
 type Keyring struct {
 	Token *def.Token
 }
 
-func loadKeyring(keyringService string) (key Keyring, err error) {
-	if keyringService == DiscardKeyringService {
+func loadKeyring(keyringConfig *keyring.Config) (key Keyring, err error) {
+	if keyringConfig == nil {
 		return
 	}
 	{
-		v, err := keyring.Get(keyringService, "token")
+		ring, err := keyring.Open(*keyringConfig)
+		if err != nil {
+			return key, err
+		}
+		item, err := ring.Get("token")
 		if err == nil {
 			var value def.Token
-			if err = value.UnmarshalText([]byte(v)); err != nil {
+			if err = value.UnmarshalText(item.Data); err != nil {
 				return key, err
 			}
 			key.Token = &value
@@ -30,16 +32,20 @@ func loadKeyring(keyringService string) (key Keyring, err error) {
 	return
 }
 
-func saveKeyring(keyringService string, key *Keyring) (err error) {
-	if keyringService == DiscardKeyringService {
+func saveKeyring(keyringConfig *keyring.Config, key *Keyring) (err error) {
+	if keyringConfig == nil {
 		return
 	}
 	{
+		ring, err := keyring.Open(*keyringConfig)
+		if err != nil {
+			return err
+		}
 		buf, err := key.Token.MarshalText()
 		if err != nil {
 			return err
 		}
-		if err := keyring.Set(keyringService, "token", string(buf)); err != nil {
+		if err := ring.Set(keyring.Item{Key: "token", Data: buf}); err != nil {
 			return err
 		}
 	}
