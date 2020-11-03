@@ -7,6 +7,7 @@ import (
 	"runtime"
 
 	"github.com/dave/jennifer/jen"
+	"github.com/kyoh86/appenv/internal/fs"
 )
 
 // Generate a configuration handlers from options.
@@ -528,13 +529,8 @@ func (g *Generator) genEnvar(file *jen.File, options []*option) {
 	}).Line()
 }
 
-func (g *Generator) Do(packagePath, outDir string, options ...*option) error {
+func (g *Generator) Render(packagePath string, manager fs.FileManager, options ...*option) error {
 	if err := g.init(); err != nil {
-		return err
-	}
-
-	full, err := filepath.Abs(outDir)
-	if err != nil {
 		return err
 	}
 
@@ -542,19 +538,19 @@ func (g *Generator) Do(packagePath, outDir string, options ...*option) error {
 
 	accessFile := g.createFile(packagePath)
 	g.genAccess(accessFile, options)
-	if err := accessFile.Save(filepath.Join(full, "access_gen.go")); err != nil {
+	if err := renderFile(accessFile, manager, "access_gen.go"); err != nil {
 		return err
 	}
 
 	configFile := g.createFile(packagePath)
 	g.genConfig(configFile, options)
-	if err := configFile.Save(filepath.Join(full, "config_gen.go")); err != nil {
+	if err := renderFile(configFile, manager, "config_gen.go"); err != nil {
 		return err
 	}
 
 	appenvFile := g.createFile(packagePath)
 	g.genAppenv(appenvFile)
-	if err := appenvFile.Save(filepath.Join(full, "appenv_gen.go")); err != nil {
+	if err := renderFile(appenvFile, manager, "appenv_gen.go"); err != nil {
 		return err
 	}
 
@@ -562,7 +558,7 @@ func (g *Generator) Do(packagePath, outDir string, options ...*option) error {
 		ymlFile := g.createFile(packagePath)
 		ymlFile.ImportAlias(pkgYAML, "yaml")
 		g.genYAML(ymlFile, options)
-		if err := ymlFile.Save(filepath.Join(full, "yml_gen.go")); err != nil {
+		if err := renderFile(ymlFile, manager, "yml_gen.go"); err != nil {
 			return err
 		}
 	}
@@ -571,7 +567,7 @@ func (g *Generator) Do(packagePath, outDir string, options ...*option) error {
 		keyringFile := g.createFile(packagePath)
 		keyringFile.ImportAlias(pkgKeyring, "keyring")
 		g.genKeyring(keyringFile, options)
-		if err := keyringFile.Save(filepath.Join(full, "keyring_gen.go")); err != nil {
+		if err := renderFile(keyringFile, manager, "keyring_gen.go"); err != nil {
 			return err
 		}
 	}
@@ -579,10 +575,23 @@ func (g *Generator) Do(packagePath, outDir string, options ...*option) error {
 	if g.storeEnvar {
 		envarFile := g.createFile(packagePath)
 		g.genEnvar(envarFile, options)
-		if err := envarFile.Save(filepath.Join(full, "envar_gen.go")); err != nil {
+		if err := renderFile(envarFile, manager, "envar_gen.go"); err != nil {
 			return err
 		}
 	}
 
 	return nil
+}
+
+func renderFile(file *jen.File, manager fs.FileManager, name string) error {
+	output, err := manager.Open(name)
+	if err != nil {
+		return err
+	}
+	defer output.Close()
+	return file.Render(output)
+}
+
+func (g *Generator) Do(packagePath, outDir string, options ...*option) error {
+	return g.Render(packagePath, fs.Dir(outDir), options...)
 }
