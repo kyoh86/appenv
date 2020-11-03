@@ -5,7 +5,7 @@ package out
 import (
 	"io"
 
-	"github.com/99designs/keyring"
+	keyring "github.com/99designs/keyring"
 )
 
 func GetAppenv(yamlReader io.Reader, keyringConfig *keyring.Config, envarPrefix string) (config Config, access Access, err error) {

@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/99designs/keyring"
+	keyring "github.com/99designs/keyring"
 	def "github.com/kyoh86/appenv/internal/def"
 	types "github.com/kyoh86/appenv/types"
 )

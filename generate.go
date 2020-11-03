@@ -63,7 +63,7 @@ func (g *Generator) genAccess(file *jen.File, options []*option) {
 			accessParams.Id("yamlReader").Qual("io", "Reader")
 		}
 		if g.storeKeyring {
-			accessParams.Id("keyringService").String()
+			accessParams.Id("keyringConfig").Op("*").Qual(pkgKeyring, "Config")
 		}
 		if g.storeEnvar {
 			accessParams.Id("envarPrefix").String()
@@ -78,7 +78,7 @@ func (g *Generator) genAccess(file *jen.File, options []*option) {
 		}
 		if g.storeKeyring {
 			accessCodes.List(jen.Id("keyring"), jen.Err()).
-				Op(":=").Id("loadKeyring").Call(jen.Id("keyringService"))
+				Op(":=").Id("loadKeyring").Call(jen.Id("keyringConfig"))
 			accessCodes.If(jen.Err().Op("!=").Nil()).Block(
 				jen.Return(jen.Id("access"), jen.Err()),
 			)
@@ -151,7 +151,7 @@ func (g *Generator) genAppenv(file *jen.File) {
 			getAppenvParams.Id("yamlReader").Qual("io", "Reader")
 		}
 		if g.storeKeyring {
-			getAppenvParams.Id("keyringService").String()
+			getAppenvParams.Id("keyringConfig").Op("*").Qual(pkgKeyring, "Config")
 		}
 		if g.storeEnvar {
 			getAppenvParams.Id("envarPrefix").String()
@@ -166,7 +166,7 @@ func (g *Generator) genAppenv(file *jen.File) {
 		}
 		if g.storeKeyring {
 			getAppenvCodes.List(jen.Id("keyring"), jen.Err()).
-				Op(":=").Id("loadKeyring").Call(jen.Id("keyringService"))
+				Op(":=").Id("loadKeyring").Call(jen.Id("keyringConfig"))
 			getAppenvCodes.If(jen.Err().Op("!=").Nil()).Block(
 				jen.Return(jen.Id("config"), jen.Id("access"), jen.Err()),
 			)
@@ -217,7 +217,7 @@ func (g *Generator) genConfig(file *jen.File, options []*option) {
 			getConfigParams.Id("yamlReader").Qual("io", "Reader")
 		}
 		if g.storeKeyring {
-			getConfigParams.Id("keyringService").String()
+			getConfigParams.Id("keyringConfig").Op("*").Qual(pkgKeyring, "Config")
 		}
 	}).Params(jen.Id("config").Id("Config"), jen.Err().Id("error")).BlockFunc(func(getConfigCodes *jen.Group) {
 		if g.storeYAML {
@@ -229,7 +229,7 @@ func (g *Generator) genConfig(file *jen.File, options []*option) {
 		}
 		if g.storeKeyring {
 			getConfigCodes.List(jen.Id("keyring"), jen.Err()).
-				Op(":=").Id("loadKeyring").Call(jen.Id("keyringService"))
+				Op(":=").Id("loadKeyring").Call(jen.Id("keyringConfig"))
 			getConfigCodes.If(jen.Err().Op("!=").Nil()).Block(
 				jen.Return(jen.Id("config"), jen.Err()),
 			)
@@ -266,7 +266,7 @@ func (g *Generator) genConfig(file *jen.File, options []*option) {
 			configParams.Id("yamlWriter").Qual("io", "Writer")
 		}
 		if g.storeKeyring {
-			configParams.Id("keyringService").String()
+			configParams.Id("keyringConfig").Op("*").Qual(pkgKeyring, "Config")
 		}
 	}).Params(jen.Id("error")).BlockFunc(func(saveConfigCodes *jen.Group) {
 		if g.storeYAML {
@@ -279,7 +279,7 @@ func (g *Generator) genConfig(file *jen.File, options []*option) {
 		}
 		if g.storeKeyring {
 			saveConfigCodes.If(
-				jen.Err().Op(":=").Id("saveKeyring").Call(jen.Id("keyringService"), jen.Id("&c").Dot("keyring")),
+				jen.Err().Op(":=").Id("saveKeyring").Call(jen.Id("keyringConfig"), jen.Id("&c").Dot("keyring")),
 				jen.Err().Op("!=").Nil(),
 			).Block(
 				jen.Return(jen.Err()),
@@ -441,39 +441,53 @@ func (g *Generator) genYAML(file *jen.File, options []*option) {
 }
 
 func (g *Generator) genKeyring(file *jen.File, options []*option) {
-	file.Const().Id("DiscardKeyringService").String().Op("=").Lit("")
-
 	file.Type().Id("Keyring").StructFunc(func(keyringFields *jen.Group) {
-		file.Func().Id("loadKeyring").Params(jen.Id("keyringService").String()).Params(jen.Id("key").Id("Keyring"), jen.Err().Id("error")).BlockFunc(func(loadKeyringCodes *jen.Group) {
-			file.Func().Id("saveKeyring").Params(jen.Id("keyringService").String(), jen.Id("key").Id("*Keyring")).Params(jen.Err().Id("error")).BlockFunc(func(saveKeyringCodes *jen.Group) {
-				loadKeyringCodes.If(jen.Id("keyringService").Op("==").Id("DiscardKeyringService")).Block(jen.Return())
-				saveKeyringCodes.If(jen.Id("keyringService").Op("==").Id("DiscardKeyringService")).Block(jen.Return())
+		file.Func().Id("loadKeyring").Params(jen.Id("keyringConfig").Op("*").Qual(pkgKeyring, "Config")).Params(jen.Id("key").Id("Keyring"), jen.Err().Id("error")).BlockFunc(func(loadKeyringCodes *jen.Group) {
+			file.Func().Id("saveKeyring").Params(jen.Id("keyringConfig").Op("*").Qual(pkgKeyring, "Config"), jen.Id("key").Id("*Keyring")).Params(jen.Err().Id("error")).BlockFunc(func(saveKeyringCodes *jen.Group) {
+				loadKeyringCodes.If(jen.Id("keyringConfig").Op("==").Nil()).Block(jen.Return())
+				saveKeyringCodes.If(jen.Id("keyringConfig").Op("==").Nil()).Block(jen.Return())
 				for _, o := range options {
 					if !o.storeKeyring {
 						continue
 					}
 					keyringFields.Id(o.name).
 						Op("*").Qual(o.pkgPath, o.name)
-					loadKeyringCodes.Block(jen.List(jen.Id("v"), jen.Err()).Op(":=").Qual(pkgKeyring, "Get").
-						Call(jen.Id("keyringService"), jen.Lit(o.kebabName)),
+
+					// ring, err := keyring.Open(*keyringConfig)
+					// if err != nil {
+					// 	return key, err
+					// }
+					// item, err := ring.Get("token")
+					loadKeyringCodes.Block(jen.List(jen.Id("ring"), jen.Err()).Op(":=").Qual(pkgKeyring, "Open").
+						Call(jen.Id("*keyringConfig")),
 						jen.If(jen.Err().Op("==").Nil()).Block(
-							jen.Var().Id("value").Qual(o.pkgPath, o.name),
-							jen.If(
-								jen.Err().Op("=").Id("value").Dot("UnmarshalText").Call(jen.Index().Byte().Parens(jen.Id("v"))),
-								jen.Err().Op("!=").Nil(),
-							).Block(
-								jen.Return(jen.Id("key"), jen.Err()),
+							jen.List(jen.Id("item"), jen.Err()).Op(":=").Id("ring").Op(".").Id("Get").Call(jen.Lit(o.kebabName)),
+							jen.If(jen.Err().Op("==").Nil()).Block(
+								jen.Var().Id("value").Qual(o.pkgPath, o.name),
+								jen.If(
+									jen.Err().Op("=").Id("value").Dot("UnmarshalText").Call(jen.Id("item").Op(".").Id("Data")),
+									jen.Err().Op("!=").Nil(),
+								).Block(
+									jen.Return(jen.Id("key"), jen.Err()),
+								),
+								jen.Id("key").Dot(o.name).Op("=").Id("&value"),
 							),
-							jen.Id("key").Dot(o.name).Op("=").Id("&value"),
 						),
 					)
 					saveKeyringCodes.Block(
+						jen.List(jen.Id("ring"), jen.Err()).Op(":=").Qual(pkgKeyring, "Open").Call(jen.Id("*keyringConfig")),
+						jen.If(jen.Err().Op("!=").Nil()).Block(
+							jen.Return(jen.Err()),
+						),
 						jen.List(jen.Id("buf"), jen.Err()).Op(":=").Id("key").Dot(o.name).Dot("MarshalText").Call(),
 						jen.If(jen.Err().Op("!=").Nil()).Block(
 							jen.Return(jen.Err()),
 						),
 						jen.If(
-							jen.Err().Op(":=").Qual(pkgKeyring, "Set").Call(jen.Id("keyringService"), jen.Lit(o.kebabName), jen.String().Call(jen.Id("buf"))),
+							jen.Err().Op(":=").Id("ring").Op(".").Id("Set").Call(jen.Qual(pkgKeyring, "Item").Block(jen.Dict{
+								jen.Id("Key"):  jen.Lit(o.kebabName),
+								jen.Id("Data"): jen.Id("buf"),
+							})),
 							jen.Err().Op("!=").Nil(),
 						).Block(
 							jen.Return(jen.Err()),

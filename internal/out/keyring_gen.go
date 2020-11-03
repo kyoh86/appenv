@@ -3,7 +3,7 @@
 package out
 
 import (
-	"github.com/99designs/keyring"
+	keyring "github.com/99designs/keyring"
 	def "github.com/kyoh86/appenv/internal/def"
 )
 
@@ -44,7 +44,11 @@ func saveKeyring(keyringConfig *keyring.Config, key *Keyring) (err error) {
 		if err != nil {
 			return err
 		}
-		if err := ring.Set(keyring.Item{Key: "token", Data: buf}); err != nil {
+		if err := ring.Set(keyring.Item{
+
+			Data: buf,
+			Key:  "token",
+		}); err != nil {
 			return err
 		}
 	}

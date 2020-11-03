@@ -38,7 +38,7 @@ func TestGenerateSinglePropAllStore(t *testing.T) {
 				t.Errorf("expected header %q does not equal %q at %d", header, lines[index], index)
 			}
 		}
-		if !strings.Contains(content, "func GetAccess(yamlReader io.Reader, keyringService string, envarPrefix string) (access Access, err error)") {
+		if !strings.Contains(content, "func GetAccess(yamlReader io.Reader, keyringConfig *keyring.Config, envarPrefix string) (access Access, err error)") {
 			t.Errorf("expected access builder does not exit in %s", testtarget.AccessFile)
 		}
 		if !strings.Contains(content, "func (a *Access) HostName() string") {
@@ -57,7 +57,7 @@ func TestGenerateSinglePropAllStore(t *testing.T) {
 				t.Errorf("expected header %q does not equal %q at %d", header, lines[index], index)
 			}
 		}
-		if !strings.Contains(content, "func GetConfig(yamlReader io.Reader, keyringService string) (config Config, err error)") {
+		if !strings.Contains(content, "func GetConfig(yamlReader io.Reader, keyringConfig *keyring.Config) (config Config, err error)") {
 			t.Errorf("expected config builder does not exit in %s", testtarget.ConfigFile)
 		}
 		if !strings.Contains(content, "func (a *Config) HostName() types.Config") {
@@ -76,7 +76,7 @@ func TestGenerateSinglePropAllStore(t *testing.T) {
 				t.Errorf("expected header %q does not equal %q at %d", header, lines[index], index)
 			}
 		}
-		if !strings.Contains(content, "func GetAppenv(yamlReader io.Reader, keyringService string, envarPrefix string) (config Config, access Access, err error)") {
+		if !strings.Contains(content, "func GetAppenv(yamlReader io.Reader, keyringConfig *keyring.Config, envarPrefix string) (config Config, access Access, err error)") {
 			t.Errorf("expected appenv builder does not exit in %s", testtarget.AppenvFile)
 		}
 	})
