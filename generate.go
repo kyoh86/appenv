@@ -413,7 +413,7 @@ func (g *Generator) genYAML(file *jen.File, options []*option) {
 		Add(jen.Id("error")).
 		Block(
 			jen.Return(
-				jen.Qual("github.com/goccy/go-yaml", "NewEncoder").Call(jen.Id("w")).
+				jen.Qual(pkgYAML, "NewEncoder").Call(jen.Id("w")).
 					Op(".").
 					Id("Encode").Call(jen.Id("yml")),
 			),
@@ -432,7 +432,7 @@ func (g *Generator) genYAML(file *jen.File, options []*option) {
 			jen.If(jen.Id("r").Op("==").Id("EmptyYAMLReader")).Block(
 				jen.Return(),
 			),
-			jen.Err().Op("=").Qual("github.com/goccy/go-yaml", "NewDecoder").Call(jen.Id("r")).
+			jen.Err().Op("=").Qual(pkgYAML, "NewDecoder").Call(jen.Id("r")).
 				Op(".").
 				Id("Decode").Call(jen.Op("&").Id("yml")),
 			jen.Return(),
@@ -453,11 +453,6 @@ func (g *Generator) genKeyring(file *jen.File, options []*option) {
 					keyringFields.Id(o.name).
 						Op("*").Qual(o.pkgPath, o.name)
 
-					// ring, err := keyring.Open(*keyringConfig)
-					// if err != nil {
-					// 	return key, err
-					// }
-					// item, err := ring.Get("token")
 					loadKeyringCodes.Block(jen.List(jen.Id("ring"), jen.Err()).Op(":=").Qual(pkgKeyring, "Open").
 						Call(jen.Id("*keyringConfig")),
 						jen.If(jen.Err().Op("==").Nil()).Block(
